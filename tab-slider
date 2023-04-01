@@ -1,0 +1,357 @@
+<div class=3D"page-width">
+    {%- if section.settings.tabs_heading !=3D blank -%}
+    <div class=3D"grid grid--no-gutters section-header">
+      <div class=3D"grid__item one-whole text-center">
+        <h2 class=3D"h2 cust-h2">{{ section.settings.tabs_heading }}</h2>
+      </div>
+      <div class=3D"grid__item one-whole text-center">
+        <p>{{ section.settings.tabs_sub_heading }}</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class=3D"grid grid--no-gutters">
+      <div class=3D"grid__item one-whole text-center">
+        <div class=3D"fl0t-head">
+          <h2 class=3D"h2 cust-h2 cust-h2tb"></h2>
+
+        </div>
+        {% assign tab_alignments =3D section.settings.tab_align %}
+        <ul class=3D"tabs tabs_align">
+          {% for block in section.blocks %}
+          {% assign collection =3D collections[block.settings.collection] %=
+}
+          <li role=3D"presentation" class=3D"{% if forloop.index =3D=3D 1
+%}active{% endif %} li-tab">
+            <a href=3D"#collection{{forloop.index}}"
+aria-controls=3D"collection{{forloop.index}}" role=3D"tab"
+data-toggle=3D"tab">{{collection.title}}</a>
+          </li>
+          {% endfor %}
+        </ul>
+        <style>
+          .tabs_align {
+            float: {{ tab_alignments }};
+            {% if section.settings.tab_align =3D=3D 'None' %}
+            margin: 0 auto;
+            width: {{ section.settings.center_align }}px;
+            {% endif %}
+          }
+        </style>
+      </div>
+    </div>
+    <div class=3D"{% if section.settings.show_slider %} grids {% else %} gr=
+id
+{% endif %}">
+      {% case section.settings.grid %}
+      {% when 2 %}
+      {%- assign max_height =3D 530 -%}
+      {%- assign grid_item_width =3D 'medium-up--one-half' -%}
+      {% when 3 %}
+      {%- assign max_height =3D 345 -%}
+      {%- assign grid_item_width =3D 'small--one-half medium-up--one-third'
+-%}
+      {% when 4 %}
+      {%- assign max_height =3D 250 -%}
+      {%- assign grid_item_width =3D 'small--one-half medium-up--one-quarte=
+r'
+-%}
+      {% when 5 %}
+      {%- assign max_height =3D 195 -%}
+      {%- assign grid_item_width =3D 'small--one-half medium-up--one-fifth'
+-%}
+      {% endcase %}
+      {% assign product_limit =3D section.settings.grid | times:
+section.settings.rows %}
+      <div class=3D"tab_container">
+        {%for block in section.blocks%}
+        {% assign collection =3D collections[block.settings.collection] %}
+
+        <div id=3D"collection{{forloop.index}}" class=3D"tab_content {% if
+section.settings.show_slider %} owl_carousel {% endif %}">
+
+          {% for product in collection.products limit: product_limit %}
+          <div class=3D"{% if section.settings.show_slider %} owl_slider {%
+else %} grid__item {{ grid_item_width }} {% endif %} grid--no-gutters">
+
+            <div class=3D"slitb-box">
+              <a  href=3D"{{ product.url | within: collection }}">
+                <div class=3D"bgt-img" style=3D"padding-top: 15px;">
+                  <img id=3D"{{ img_id }}"
+                       class=3D"grid-view-item__image lazyload"
+                       src=3D"{{ product.featured_image | img_url: '2048x' =
+}}"
+                       data-src=3D"{{ img_url }}"
+                       data-widths=3D"[180, 360, 540, 720, 900, 1080, 1296,
+1512, 1728, 2048]"
+                       data-aspectratio=3D"{{
+product.featured_image.aspect_ratio }}"
+                       data-sizes=3D"auto"
+                       alt=3D"{{ product.featured_image.alt | escape }}">
+                </div>
+              </a>
+              <div class=3D"grid__itemstb  text-left">
+
+                <div style=3D"padding-top: 10px;">
+                  <a href=3D"{{ product.url | within: collection
+}}"><h4>{{product.title}}</h4> </a>
+                </div>
+                <div class=3D"grid-view-item__meta">
+
+
+                  {% render 'product-price',product:product %}
+
+                </div>
+                <span class=3D"shopify-product-reviews-badge" data-id=3D"{{
+product.id }}"></span>
+
+                <div
+                     id=3D"ProductSection-{{ section.id }}"
+                     data-section-id=3D"{{ section.id }}"
+                     data-section-type=3D"product"
+                     data-enable-history-state=3D"true"
+                     data-ajax-enabled=3D"{{ settings.enable_ajax }}"
+                     >
+                  {%- assign current_variant =3D
+product.selected_or_first_available_variant -%}
+                  {% form 'product', product, class:form_classes,
+novalidate: 'novalidate',data-product-form: '' %}
+
+                  <input type=3D"hidden" name=3D"id" value=3D"{{
+product.variants.first.id }}" />
+                  <input min=3D"1" type=3D"hidden" id=3D"quantity"
+name=3D"quantity" value=3D"1"/>
+                  <button type=3D"submit" name=3D"add"
+                          aria-label=3D"{{ 'products.product.add_to_cart' |=
+ t
+}}"
+                          class=3D"btn-arrow"
+                          {% if settings.enable_ajax
+%}aria-haspopup=3D"dialog"{% endif %}
+                          data-add-to-cart>
+                    <span data-add-to-cart-text>
+                      {{ 'products.product.add_to_cart' | t }} <i
+class=3D"fas fa-long-arrow-alt-right"></i>
+                    </span>
+                    <span class=3D"hide" data-loader>
+                      {% include 'icon-spinner' %}
+                    </span>
+                  </button>
+                  {% endform %}
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+          {%endfor%}
+        </div>
+
+
+        {% endfor %}
+
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    var _slickoptions =3D {
+          infinite: true,
+          slidesToShow: 4,
+          slidesToScroll: 4,
+          prevArrow:"<span class=3D'arow-cusprev'><i class=3D'fas
+fa-chevron-left'></i></span>",
+          nextArrow:"<span class=3D'arow-cusnxt'><i class=3D'fas
+fa-chevron-right'></i></span>",
+          responsive: [
+          {
+            breakpoint: 1024,
+            settings: {
+              slidesToShow: 3,
+              slidesToScroll: 3,
+              infinite: true,
+              dots: true
+            }
+          },
+          {
+            breakpoint: 600,
+            settings: {
+              slidesToShow: 2,
+              slidesToScroll: 2
+            }
+          },
+          {
+            breakpoint: 480,
+            settings: {
+              slidesToShow: 2,
+              slidesToScroll: 2
+            }
+          }
+        ]
+        };
+    $(document).ready(function($) {
+      $('.owl_carousel').slick(_slickoptions);
+      //Tabs
+      $('.tab_content').hide();
+      $('.tab_content:first').show();
+      $('.tab_contents').hide();
+      $('.tab_contents:first').show();
+      $('.cust-h2tb').html($('.tabs li:first').text());
+
+      $('.tabs li:first').addClass('active');
+      $('.tabs li').click(function(event) {
+        event.preventDefault();
+        $('.tabs li').removeClass('active');
+        $(this).addClass('active');
+
+        $('.tab_contents').hide();
+        $('.tab_content').hide();
+        $('.cust-h2tb').html($(this).text());
+
+        var selectTab =3D $(this).find('a').attr("href");
+        $(selectTab).fadeIn();
+
+        $('.owl_carousel').slick('unslick');
+        $(selectTab).slick(_slickoptions);
+
+      });
+    });
+  </script>
+
+{% schema %}
+  {
+    "name": "Collection tabs",
+    "class": "index-sectiontab",
+    "max_blocks": 4,
+    "settings": [
+      {
+        "type": "text",
+        "id": "tabs_heading",
+        "label": {
+          "en": "Show product slider"
+        }
+      },
+      {
+        "type": "text",
+        "id": "tabs_sub_heading",
+        "label": {
+          "en": "Show product slider"
+        }
+      },
+      {
+        "type": "select",
+        "id": "tab_align",
+        "label": {
+          "en": "Align Tab Heads"
+        },
+        "default": "Left",
+        "options": [
+          {
+            "label": {
+              "en": "Left"
+            },
+            "value": "Left"
+          },
+          {
+            "label": {
+              "en": "Center"
+            },
+            "value": "None"
+          },
+          {
+            "label": {
+              "en": "Right"
+            },
+            "value": "Right"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "center_align",
+        "label": {
+          "en": "Adjust Center Alignment"
+        },
+        "max": 1000,
+        "min": 200,
+        "step": 10,
+        "default": 200
+      },
+      {
+        "type": "range",
+        "id": "grid",
+        "label": {
+          "de": "Produkte per Reihe",
+          "en": "Products per row",
+          "es": "Productos por fila",
+          "fr": "Produits par rang=C3=A9e",
+          "it": "Prodotti per riga",
+          "ja": "=E8=A1=8C=E3=81=82=E3=81=9F=E3=82=8A=E3=81=AE=E5=95=86=E5=
+=93=81=E6=95=B0",
+          "pt-BR": "Produtos por linha"
+        },
+        "min": 2,
+        "max": 5,
+        "step": 1,
+        "default": 3
+      },
+      {
+        "type": "range",
+        "id": "rows",
+        "label": {
+          "de": "Reihen",
+          "en": "Rows",
+          "es": "Filas",
+          "fr": "Rang=C3=A9es",
+          "it": "Righe",
+          "ja": "=E8=A1=8C",
+          "pt-BR": "Linhas"
+        },
+        "min": 1,
+        "max": 5,
+        "step": 1,
+        "default": 2
+      },
+      {
+        "type": "checkbox",
+        "id": "show_slider",
+        "label": {
+          "en": "Show product slider"
+        },
+        "default": false
+      }
+  ],
+    "blocks": [
+      {
+        "type": "featured_collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection tabs",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "featured_collection"
+          },
+          {
+            "type": "featured_collection"
+          },
+          {
+            "type": "featured_collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
+
